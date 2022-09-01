@@ -1,34 +1,54 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+// useDebugValue: useMedia
+// http://localhost:3000/isolated/exercise/06.js
 
-function App() {
-  const [count, setCount] = useState(0)
+import { useDebugValue, useEffect, useState } from "react";
+import "./App.css";
 
-  return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </div>
-  )
+function useMedia(query: string, initialState = false) {
+  const [state, setState] = useState(initialState);
+  // 🐨 call useDebugValue here.
+  // 💰 here's the formatted label I use: `\`${query}\` => ${state}`
+  useDebugValue(`\`${query}\` => ${state}`);
+
+  useEffect(() => {
+    let mounted = true;
+    const mql = window.matchMedia(query);
+    function onChange() {
+      if (!mounted) {
+        return;
+      }
+      setState(mql.matches);
+    }
+
+    mql.addListener(onChange);
+    setState(mql.matches);
+
+    return () => {
+      mounted = false;
+      mql.removeListener(onChange);
+    };
+  }, [query]);
+
+  return state;
 }
 
-export default App
+function Box() {
+  const isBig = useMedia("(min-width: 1000px)");
+  const isMedium = useMedia("(max-width: 999px) and (min-width: 700px)");
+  const isSmall = useMedia("(max-width: 699px)");
+  const color = isBig
+    ? "green"
+    : isMedium
+    ? "yellow"
+    : isSmall
+    ? "red"
+    : undefined;
+
+  return <div style={{ width: 200, height: 200, backgroundColor: color }} />;
+}
+
+function App() {
+  return <Box />;
+}
+
+export default App;
