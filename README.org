@@ -1,3 +1,6 @@
+#+title: useDebugValue
+
+#+begin_src tsx
 // useDebugValue: useMedia
 
 import { useDebugValue, useEffect, useState } from "react";
@@ -51,3 +54,4 @@ function App() {
 }
 
 export default App;
+#+end_src
